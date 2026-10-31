@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkillGap — Resume Skill Gap Analyzer</title>
+  <meta name="description" content="Upload your resume and a job description to see matching skills, missing skills and a match score." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">S</span>
+      <span class="brand-name">SkillGap</span>
+    </div>
+    <span class="topbar-tag">Resume Skill Gap Analyzer</span>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <section id="hero" class="hero">
+      <p class="eyebrow">AI-powered resume analysis</p>
+      <h1>See exactly which skills<br class="hero-br" /> your resume is missing.</h1>
+      <p class="hero-sub">
+        Upload your resume and the job description. The AI reads both, then shows
+        the skills that match, the skills you are missing, and an honest match score.
+      </p>
+    </section>
+
+    <!-- INPUT FORM -->
+    <section id="form-section" class="form-section">
+      <div class="input-grid">
+
+        <!-- Resume -->
+        <div class="card">
+          <div class="card-head">
+            <span class="step-badge">1</span>
+            <h2>Your resume</h2>
+          </div>
+
+          <label id="resume-drop" class="dropzone" for="resume-input">
+            <span class="dropzone-icon" aria-hidden="true">&#8613;</span>
+            <span class="dropzone-title">Drag and drop your resume</span>
+            <span class="dropzone-sub">or click to browse</span>
+            <span class="dropzone-formats">PDF or DOCX &middot; max 5 MB</span>
+          </label>
+          <input id="resume-input" type="file" accept=".pdf,.docx" hidden />
+
+          <div id="resume-file" class="file-chip" hidden>
+            <span class="file-chip-icon" aria-hidden="true">&#9636;</span>
+            <span id="resume-file-name" class="file-chip-name"></span>
+            <button id="resume-remove" class="file-chip-remove" type="button" aria-label="Remove resume">&times;</button>
+          </div>
+        </div>
+
+        <!-- Job description -->
+        <div class="card">
+          <div class="card-head">
+            <span class="step-badge">2</span>
+            <h2>Job description</h2>
+          </div>
+
+          <textarea
+            id="jd-text"
+            class="textarea"
+            rows="9"
+            placeholder="Paste the full job description here..."
+          ></textarea>
+
+          <div class="jd-file-row">
+            <span class="or-text">or</span>
+            <label for="jd-file-input" class="link-button">Upload it as a file (PDF, DOCX, TXT)</label>
+            <input id="jd-file-input" type="file" accept=".pdf,.docx,.txt" hidden />
+          </div>
+
+          <div id="jd-file" class="file-chip" hidden>
+            <span class="file-chip-icon" aria-hidden="true">&#9636;</span>
+            <span id="jd-file-name" class="file-chip-name"></span>
+            <button id="jd-remove" class="file-chip-remove" type="button" aria-label="Remove job description file">&times;</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="error-box" class="error-box" role="alert" hidden></div>
+
+      <div class="action-row">
+        <button id="analyze-btn" class="btn-primary" type="button">Analyze skill gap</button>
+      </div>
+    </section>
+
+    <!-- LOADING -->
+    <section id="loading" class="loading" hidden aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <p id="loading-text" class="loading-text">Reading your resume...</p>
+      <p class="loading-sub">This usually takes 10 to 30 seconds.</p>
+    </section>
+
+    <!-- RESULTS -->
+    <section id="results" class="results" hidden>
+      <div class="results-top">
+
+        <div class="card score-card">
+          <div class="score-ring">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="ring-track" cx="60" cy="60" r="52" />
+              <circle id="ring-fill" class="ring-fill" cx="60" cy="60" r="52" />
+            </svg>
+            <div class="score-center">
+              <span id="score-value" class="score-value">0</span>
+              <span class="score-unit">/ 100</span>
+            </div>
+          </div>
+          <p id="verdict" class="verdict"></p>
+          <p id="candidate-name" class="candidate-name"></p>
+        </div>
+
+        <div class="card reasons-card">
+          <h3 class="card-title">Why this score</h3>
+          <ul id="reasons-list" class="reasons-list"></ul>
+        </div>
+      </div>
+
+      <div class="skills-grid">
+        <div class="card">
+          <div class="skills-head">
+            <h3 class="card-title">Matching skills</h3>
+            <span id="matched-count" class="count-pill count-good">0</span>
+          </div>
+          <div id="matched-list" class="chip-list"></div>
+        </div>
+
+        <div class="card">
+          <div class="skills-head">
+            <h3 class="card-title">Missing skills</h3>
+            <span id="missing-count" class="count-pill count-bad">0</span>
+          </div>
+          <div id="missing-list" class="chip-list"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">Skills found in your resume</h3>
+        <div id="resume-skills-list" class="chip-list"></div>
+      </div>
+
+      <div class="action-row center">
+        <button id="reset-btn" class="btn-secondary" type="button">Analyze another resume</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <span>SkillGap &middot; FastAPI + Gemini 2.5 Flash + HTML/CSS/JS</span>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
